@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>{{id}}</title>
+  <link rel="stylesheet" href="/css/style.css">
+  {{#if ENV_DEVELOPMENT}}
+    <script src="http://localhost:35729/livereload.js"></script>
+  {{/if}}
+</head>
+<body>
+  <div class="canvas">
+    <svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"></svg>
+    <div class="debug-info"></div>
+  </div>
+  <button class="btn btn-0" data-id="{{id}}">&mdash;</button>
+  <button class="btn btn-1 submit" data-class="positive" data-id="{{id}}">+ POS</button>
+  <button class="btn btn-2 submit" data-class="negative" data-id="{{id}}">- NEG</button>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+  <script src="/js/classify.js"></script>
+  <script type="text/javascript">
+    var _imageData = {
+      id: '{{id}}',
+      data: 'data:image/jpg;base64,{{data}}',
+      width: '{{width}}',
+      height: '{{height}}'
+    }
+  </script>
+</body>
+</html>
