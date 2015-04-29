@@ -1,0 +1,8 @@
+{
+  "debug": {
+    "imageDir": "../webcam_upload"
+  },
+  "release": {
+    "imageDir": "/home/webcam"
+  }
+}

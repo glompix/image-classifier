@@ -2,8 +2,9 @@ var express = require('express');
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
+var config = require('../config.json')[process.env.NODE_ENV || 'debug'];
 
-var queueRoot = '/Users/sbranham/Projects/cylonjs-1/webcam_upload';
+var queueRoot = config.imageDir;
 var rectsFile = path.join(queueRoot, 'positive', 'rects.txt');
 
 var router = express.Router();
