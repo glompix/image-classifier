@@ -48,13 +48,10 @@ $(function () {
   // touch events
   .on('touchstart', function (e) {
     startDrawing(e.originalEvent.changedTouches[0]);
-    console.log('START', originPoint);
-  }).on('mouseup', function (e) {
+  }).on('touchend', function (e) {
     stopDrawing();
-    console.log('STOP', imgRect);
-  }).on('mousemove', function(e) {
+  }).on('touchmove', function(e) {
     keepDrawing(e.originalEvent.changedTouches[0]);
-    console.log(originPoint, imgRect);
   });
 
   function startDrawing(e) {
