@@ -44,7 +44,7 @@ router.post('/', function(req, res) {
   console.log(imagePath);
   if (req.body.class === 'positive') {
     var r = req.body.rect;
-    var data = util.format('%s\t%d\t%d %d %d %d', id, 1, r.x, r.y, r.w, r.h);
+    var data = util.format('%s\t%d\t%d %d %d %d\n', id, 1, r.x, r.y, r.w, r.h);
     console.log('POSITIVE', data);
     fs.appendFile(rectsFile, data, function (err) { if (err) { console.log('ERROR: ' + err); } });
   }
