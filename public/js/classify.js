@@ -1,6 +1,6 @@
 $(function () {
   var imgRect, viewportRect;
-  var url = '//localhost:3000/';
+  var url = '/';
 
   $('.submit').on('click', function() {
     var postData = {
