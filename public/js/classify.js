@@ -36,22 +36,46 @@ $(function () {
   var drawing = false;
   var svg = Snap('svg');
 
+  // mouse events
   $('.canvas').on('mousedown', function (e) {
+    startDrawing(e);
+    e.preventDefault();
+  }).on('mouseup', function (e) {
+    stopDrawing(e);
+  }).on('mousemove', function(e) {
+    keepDrawing(e);
+  })
+  // touch events
+  .on('touchstart', function (e) {
+    startDrawing(e.originalEvent.changedTouches[0]);
+    console.log('START', originPoint);
+  }).on('mouseup', function (e) {
+    stopDrawing();
+    console.log('STOP', imgRect);
+  }).on('mousemove', function(e) {
+    keepDrawing(e.originalEvent.changedTouches[0]);
+    console.log(originPoint, imgRect);
+  });
+
+  function startDrawing(e) {
     originPoint = {x: e.pageX, y: e.pageY};
     if (r) { r.remove(); r = undefined; }
     drawing = true;
     r = svg.rect();
-    e.preventDefault();
-  }).on('mouseup', function (e) {
-    var endPoint = {x: e.pageX, y: e.pageY};
-    createRect(originPoint, endPoint);
-    drawing = false;
-  }).on('mousemove', function(e) {
+  }
+  function keepDrawing(e) {
     if (drawing) {
       var endPoint = {x: e.pageX, y: e.pageY};
       createRect(originPoint, endPoint);
     }
-  });
+  }
+  function stopDrawing(e) {
+    if (e) {
+      var endPoint = {x: e.pageX, y: e.pageY};
+      createRect(originPoint, endPoint);
+    }
+    drawing = false;
+  }
 
   function createRect(p1, p2) {
     var x, y, w, h;
