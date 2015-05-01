@@ -1,10 +1,15 @@
 $(function () {
-  var imgRect, viewportRect;
-  var url = '/';
+  'use strict';
+  var _imageData, imgRect, viewportRect;
+  var url = '/service';
+  var editStack = [];
+  var $loading = $('.loading');
+  var svg = Snap('#svg');
 
   $('.submit').on('click', function() {
+    $loading.show();
     var postData = {
-      'id': $(this).attr('data-id'),
+      'id': _imageData.id,
       'class': $(this).attr('data-class'),
       'rect': imgRect
     };
@@ -12,10 +17,46 @@ $(function () {
     $.post(url, postData, function(err) {
       console.log('POSTED', err);
       if (!err || err === 'OK') {
-        location.reload(true);
+        editStack.push(_imageData.id);
+        loadImage();
+      }
+      else {
+        alert(err);
+        $loading.hide();
       }
     });
   });
+
+  $(window).on('hashchange', function () {
+    var hash = this.location.hash;
+    console.log('HASHCHANGE', hash);
+    if (hash !== '#' + _imageData.id) {
+      this.location.hash = '';
+      loadImage(hash);
+    }
+  })
+
+  function loadImage(filename) {
+    console.log("LOAD", filename);
+    var getUrl = url;
+    if (filename) getUrl += '/' + filename;
+    $.get(getUrl, function (data) {
+      if (data.error) {
+        alert(data.error);
+      }
+      else {
+        _imageData = data;
+        if (window.location.hash === '#' + _imageData.id) {
+          console.log('PAINT', _imageData);
+          svg.image(_imageData.data, 0, 0, '100%', '100%');
+          $loading.hide();
+        }
+        else {
+          window.location.hash = _imageData.id;
+        }
+      }
+    })
+  }
 
   function translateRect(r) {
     var $svg = $('svg');
@@ -34,7 +75,6 @@ $(function () {
   var originPoint;
   var r;
   var drawing = false;
-  var svg = Snap('svg');
 
   // mouse events
   $('.canvas').on('mousedown', function (e) {
@@ -100,5 +140,6 @@ $(function () {
     $('.debug-info').html('<pre>' + content + '</pre>');
   }
 
-  svg.image(_imageData.data, 0, 0, '100%', '100%');
+  var hash = window.location.hash;
+  loadImage(hash ? hash.substring(1) : null);
 });

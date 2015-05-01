@@ -11,17 +11,12 @@ html, body {
   cursor: pointer;
 }
 
-.img-fill {
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  cursor: crosshair;
+.loading {
+  display: none;
+  background: #4a4a4a;
+  opacity: .8;
 }
 
-.img-fill svg {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-}
 .debug-info {
   display: none;
   position: absolute;
@@ -32,10 +27,10 @@ html, body {
   border: 1px solid #555;
 }
 
-
 @media screen and (orientation:portrait) {
   .canvas { width: 100%; height: 92%; }
   .debug-info { top: 0; left: 0; }
+  .btn-undo { top: 0; left: 0; width: 8%; height: 8%; }
   .btn-1 { bottom: 0; left: 0; width: 50%; height: 8%; }
   .btn-2 { bottom: 0; right: 0; width: 50%; height: 8%; }
 }

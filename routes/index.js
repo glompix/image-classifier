@@ -10,34 +10,30 @@ var rectsFile = path.join(queueRoot, 'positive', 'rects.txt');
 var router = express.Router();
 
 router.get('/', function(req, res) {
+  res.render('index');
+});
+
+
+router.get('/service', function(req, res) {
   fs.readdir(queueRoot, function(err, files) {
     var i = 0, filename;
     while (i < files.length && !files[i].match(/\.jpg$/i)) { i++; }
     if (i < files.length) { filename = files[i]; }
 
     if (filename) {
-      var filepath = path.join(queueRoot, filename);
-      fs.readFile(filepath, function (err, data) {
-        if (err) { res.send(err); }
-        else {
-          var base64Image = new Buffer(data, 'binary').toString('base64');
-          res.render('index', {
-            'id': filename,
-            'title': filename,
-            'width': 640,
-            'height': 480,
-            'data': base64Image
-          });
-        }
-      });
+      var data = loadImage(filename, function(data) { res.json(data) });
     }
     else {
       res.send('me no find file');
     }
   });
+})
+
+router.get('/service/:id', function (req, res) {
+  var data = loadImage(req.param('id'), function(data) { res.json(data) });
 });
 
-router.post('/', function(req, res) {
+router.post('/service', function(req, res) {
   var id = req.body.id;
   var imagePath = path.join(queueRoot, id);
   var destPath = path.join(queueRoot, req.body.class, id);
@@ -54,5 +50,25 @@ router.post('/', function(req, res) {
   fs.rename(imagePath, destPath, function (err) { if (err) { console.log('ERROR: ' + err); } });
   res.send('OK');
 });
+
+function loadImage(filename, callback) {
+  var filepath = path.join(queueRoot, filename);
+  fs.readFile(filepath, function (err, data) {
+    if (err) {
+      callback({
+        'error': err
+      });
+    }
+    else {
+      var base64Image = 'data:image/jpg;base64,' + new Buffer(data, 'binary').toString('base64');
+      callback({
+        'id': filename,
+        'width': 640,
+        'height': 480,
+        'data': base64Image
+      });
+    }
+  });
+}
 
 module.exports = router;
