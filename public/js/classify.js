@@ -29,33 +29,43 @@ $(function () {
 
   $(window).on('hashchange', function () {
     var hash = this.location.hash;
-    console.log('HASHCHANGE', hash);
+    console.log('HASHCHANGE', hash, _imageData);
     if (hash !== '#' + _imageData.id) {
       this.location.hash = '';
       loadImage(hash);
     }
+    else if (hash) {
+      paint();
+    }
   })
 
   function loadImage(filename) {
-    console.log("LOAD", filename);
     var getUrl = url;
     if (filename) getUrl += '/' + filename;
+    console.log("LOAD", getUrl);
     $.get(getUrl, function (data) {
+      console.log('LOADED', data);
       if (data.error) {
         alert(data.error);
       }
       else {
         _imageData = data;
         if (window.location.hash === '#' + _imageData.id) {
-          console.log('PAINT', _imageData);
-          svg.image(_imageData.data, 0, 0, '100%', '100%');
-          $loading.hide();
+          paint();
         }
         else {
           window.location.hash = _imageData.id;
         }
       }
     })
+  }
+
+  function paint() {
+    console.log('PAINT', _imageData);
+    imgRect = undefined; viewportRect = undefined;
+    svg.clear();
+    svg.image(_imageData.data, 0, 0, '100%', '100%');
+    $loading.hide();
   }
 
   function translateRect(r) {
@@ -141,5 +151,5 @@ $(function () {
   }
 
   var hash = window.location.hash;
-  loadImage(hash ? hash.substring(1) : null);
+  loadImage(hash && hash.length > 1 ? hash.substring(1) : null);
 });
