@@ -48,10 +48,12 @@ $(function () {
   // touch events
   .on('touchstart', function (e) {
     startDrawing(e.originalEvent.changedTouches[0]);
+    e.preventDefault();
   }).on('touchend', function (e) {
     stopDrawing();
   }).on('touchmove', function(e) {
     keepDrawing(e.originalEvent.changedTouches[0]);
+    e.preventDefault();
   });
 
   function startDrawing(e) {
