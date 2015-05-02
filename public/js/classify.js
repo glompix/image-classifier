@@ -1,22 +1,26 @@
 $(function () {
   'use strict';
-  var _imageData, imgRect, viewportRect;
+
+  // Config
   var url = '/service';
-  var undoStack = [];
-  var redoStack = [];
+
+  // DOM objects
   var $loading = $('.loading');
   var svg = Snap('#svg');
+
+  // Drawing data
+  var _imageData; // image displayed { id, data, width, height }
+  var _imageRect, _viewportRect; // selectedRect { x, y, w, h }
 
   $('.submit').on('click', function() {
     $loading.show();
     var postData = {
       'id': _imageData.id,
       'class': $(this).attr('data-class'),
-      'rect': imgRect
+      'rect': _imageRect
     };
     $.post(url, postData, function(err) {
       if (!err || err === 'OK') {
-        editStack.push(_imageData.id);
         loadImage();
       }
       else {
@@ -28,16 +32,20 @@ $(function () {
 
   $(window).on('hashchange', function () {
     var hash = this.location.hash;
-    if (hash !== '#' + _imageData.id) {
-      this.location.hash = '';
-      loadImage(hash);
+    var filename = hash ? hash.substring(1) : '';
+    if (filename) {
+      if (filename === _imageData.id) {
+        paint();
+      }
+      else {
+        $loading.show();
+        loadImage(filename);
+      }
     }
-    else if (hash) {
-      paint();
-    }
-  })
+  });
 
   function loadImage(filename) {
+    console.log('LOADING', filename);
     var getUrl = url;
     if (filename) getUrl += '/' + filename;
     $.get(getUrl, function (data) {
@@ -53,18 +61,18 @@ $(function () {
           window.location.hash = _imageData.id;
         }
       }
-    })
+    });
   }
 
   function paint() {
-    imgRect = undefined; viewportRect = undefined;
+    _imageRect = undefined; _viewportRect = undefined;
     svg.clear();
     svg.image(_imageData.data, 0, 0, '100%', '100%');
     $loading.hide();
   }
 
   function translateRect(r) {
-    var $svg = $('svg');
+    var $svg = $('#svg');
     var viewportWidth = $svg.width();
     var viewportHeight = $svg.height();
     var xScale = _imageData.width / viewportWidth;
@@ -78,7 +86,7 @@ $(function () {
   }
 
   var originPoint;
-  var r = [];
+  var r;
   var drawing = false;
 
   // mouse events
@@ -127,8 +135,8 @@ $(function () {
     else { x = p2.x; w = p1.x - p2.x; }
     if (p1.y < p2.y) { y = p1.y; h = p2.y - p1.y; }
     else { y = p2.y; h = p1.y - p2.y; }
-    viewportRect = {x:x, y:y, w:w, h:h};
-    imgRect = translateRect(viewportRect);
+    _viewportRect = {x:x, y:y, w:w, h:h};
+    _imageRect = translateRect(_viewportRect);
     r.attr({
       x: x, y: y,
       width: w, height: h,
@@ -140,8 +148,8 @@ $(function () {
   }
 
   function writeDebugInfo() {
-    var content = 'VIEW [' + viewportRect.x + ',' + viewportRect.y + '] ' + viewportRect.w + 'x' + viewportRect.h
-      + '\nIMG  [' + imgRect.x + ',' + imgRect.y + '] ' + imgRect.w + 'x' + imgRect.h
+    var content = 'VIEW [' + _viewportRect.x + ',' + _viewportRect.y + '] ' + _viewportRect.w + 'x' + _viewportRect.h
+      + '\nIMG  [' + _imageRect.x + ',' + _imageRect.y + '] ' + _imageRect.w + 'x' + _imageRect.h;
     $('.debug-info').html('<pre>' + content + '</pre>');
   }
 

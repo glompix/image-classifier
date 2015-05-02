@@ -1,6 +1,6 @@
 {
   "debug": {
-    "imageDir": "/Users/sbranham/Projects/cylonjs-1/webcam_upload"
+    "imageDir": "E:\\webcam_upload"
   },
   "release": {
     "imageDir": "/home/webcam"
