@@ -2,7 +2,8 @@ $(function () {
   'use strict';
   var _imageData, imgRect, viewportRect;
   var url = '/service';
-  var editStack = [];
+  var undoStack = [];
+  var redoStack = [];
   var $loading = $('.loading');
   var svg = Snap('#svg');
 
@@ -13,9 +14,7 @@ $(function () {
       'class': $(this).attr('data-class'),
       'rect': imgRect
     };
-    console.log('POST', postData);
     $.post(url, postData, function(err) {
-      console.log('POSTED', err);
       if (!err || err === 'OK') {
         editStack.push(_imageData.id);
         loadImage();
@@ -29,7 +28,6 @@ $(function () {
 
   $(window).on('hashchange', function () {
     var hash = this.location.hash;
-    console.log('HASHCHANGE', hash, _imageData);
     if (hash !== '#' + _imageData.id) {
       this.location.hash = '';
       loadImage(hash);
@@ -42,9 +40,7 @@ $(function () {
   function loadImage(filename) {
     var getUrl = url;
     if (filename) getUrl += '/' + filename;
-    console.log("LOAD", getUrl);
     $.get(getUrl, function (data) {
-      console.log('LOADED', data);
       if (data.error) {
         alert(data.error);
       }
@@ -61,7 +57,6 @@ $(function () {
   }
 
   function paint() {
-    console.log('PAINT', _imageData);
     imgRect = undefined; viewportRect = undefined;
     svg.clear();
     svg.image(_imageData.data, 0, 0, '100%', '100%');
@@ -83,7 +78,7 @@ $(function () {
   }
 
   var originPoint;
-  var r;
+  var r = [];
   var drawing = false;
 
   // mouse events

@@ -16,8 +16,11 @@ router.get('/', function(req, res) {
 
 router.get('/service', function(req, res) {
   fs.readdir(queueRoot, function(err, files) {
+    if (err) {
+      res.send(err); return;
+    }
     var i = 0, filename;
-    while (i < files.length && !files[i].match(/\.jpg$/i)) { i++; }
+    while (files && i < files.length && !files[i].match(/\.jpg$/i)) { i++; }
     if (i < files.length) { filename = files[i]; }
 
     if (filename) {
