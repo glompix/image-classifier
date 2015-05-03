@@ -6,6 +6,7 @@ Helps classify images using NodeJS and SVG for training a Haar classifier.
 * select multiple objects
 * review mode
 * ci/cd
+* fine adjustment controls
 * management objects
   * image set
   * classification set
