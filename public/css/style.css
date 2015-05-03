@@ -25,6 +25,29 @@ html, body {
   transform: translateY(-50%) translateX(-50%);
 }
 
+.image-stream img {
+  margin: 0; padding: 0;
+  width: 100%;
+}
+
+/* BEGIN http://w3bits.com/css-masonry/ */
+.masonry {
+    -moz-column-count: 4;
+    -webkit-column-count: 4;
+    column-count: 4;
+    -moz-column-gap: 1em;
+    -webkit-column-gap: 1em;
+    column-gap: 1em;
+}
+
+.masonry-item {
+    background-color: #eee;
+    display: inline-block;
+    margin: 0 0 1em;
+    width: 100%;
+}
+/* END http://w3bits.com/css-masonry/ */
+
 .debug-info {
   display: none;
   position: absolute;

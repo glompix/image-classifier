@@ -8,7 +8,6 @@ router.get('/', function(req, res) {
   res.render('index');
 });
 
-
 router.get('/service', function(req, res) {
   rectdb.nextfile(function (data) {
     if (data) {
@@ -23,7 +22,7 @@ router.get('/service', function(req, res) {
 router.get('/service/:id', function (req, res) {
   var id = req.params.id;
   rectdb.declassify(id, function() {
-    rectdb.loadfile(id, function(data) { 
+    rectdb.loadfile(id, function(data) {
       res.json(data);
     });
   });
@@ -35,7 +34,13 @@ router.post('/service', function(req, res) {
   });
 });
 
-function undoImageClass() { }
 
+router.get('/review', function (req, res) {
+  res.render('review');
+});
+
+router.get('/review/service', function (req, res) {
+
+});
 
 module.exports = router;
