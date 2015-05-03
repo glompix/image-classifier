@@ -9,17 +9,16 @@ router.get('/', function(req, res) {
 });
 
 router.get('/service', function(req, res) {
-  rectdb.nextfile(function (data) {
+  rectdb.nextfile(function(data) {
     if (data) {
       res.json(data);
-    }
-    else {
+    } else {
       res.send('me no find file');
     }
   });
 });
 
-router.get('/service/:id', function (req, res) {
+router.get('/service/:id', function(req, res) {
   var id = req.params.id;
   rectdb.declassify(id, function() {
     rectdb.loadfile(id, function(data) {
@@ -29,17 +28,17 @@ router.get('/service/:id', function (req, res) {
 });
 
 router.post('/service', function(req, res) {
-  rectdb.classify(req.body, function (err) {
+  rectdb.classify(req.body, function(err) {
     res.send(err || 'OK');
   });
 });
 
 
-router.get('/review', function (req, res) {
+router.get('/review', function(req, res) {
   res.render('review');
 });
 
-router.get('/review/service', function (req, res) {
+router.get('/review/service', function(req, res) {
 
 });
 

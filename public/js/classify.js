@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
   'use strict';
 
   // Config
@@ -22,22 +22,20 @@ $(function () {
     $.post(url, postData, function(err) {
       if (!err || err === 'OK') {
         loadImage();
-      }
-      else {
+      } else {
         alert(err);
         $loading.hide();
       }
     });
   });
 
-  $(window).on('hashchange', function () {
+  $(window).on('hashchange', function() {
     var hash = this.location.hash;
     var filename = hash ? hash.substring(1) : '';
     if (filename) {
       if (filename === _imageData.id) {
         paint();
-      }
-      else {
+      } else {
         $loading.show();
         loadImage(filename);
       }
@@ -48,16 +46,14 @@ $(function () {
     console.log('LOADING', filename);
     var getUrl = url;
     if (filename) getUrl += '/' + filename;
-    $.get(getUrl, function (data) {
+    $.get(getUrl, function(data) {
       if (data.error) {
         alert(data.error);
-      }
-      else {
+      } else {
         _imageData = data;
         if (window.location.hash === '#' + _imageData.id) {
           paint();
-        }
-        else {
+        } else {
           window.location.hash = _imageData.id;
         }
       }
@@ -65,7 +61,8 @@ $(function () {
   }
 
   function paint() {
-    _imageRect = undefined; _viewportRect = undefined;
+    _imageRect = undefined;
+    _viewportRect = undefined;
     svg.clear();
     svg.image(_imageData.data, 0, 0, '100%', '100%');
     $loading.hide();
@@ -90,40 +87,54 @@ $(function () {
   var drawing = false;
 
   // mouse events
-  $('.canvas').on('mousedown', function (e) {
-    startDrawing(e);
-    e.preventDefault();
-  }).on('mouseup', function (e) {
-    stopDrawing(e);
-  }).on('mousemove', function(e) {
-    keepDrawing(e);
-  })
-  // touch events
-  .on('touchstart', function (e) {
-    startDrawing(e.originalEvent.changedTouches[0]);
-    e.preventDefault();
-  }).on('touchend', function (e) {
-    stopDrawing();
-  }).on('touchmove', function(e) {
-    keepDrawing(e.originalEvent.changedTouches[0]);
-    e.preventDefault();
-  });
+  $('.canvas').on('mousedown', function(e) {
+      startDrawing(e);
+      e.preventDefault();
+    }).on('mouseup', function(e) {
+      stopDrawing(e);
+    }).on('mousemove', function(e) {
+      keepDrawing(e);
+    })
+    // touch events
+    .on('touchstart', function(e) {
+      startDrawing(e.originalEvent.changedTouches[0]);
+      e.preventDefault();
+    }).on('touchend', function(e) {
+      stopDrawing();
+    }).on('touchmove', function(e) {
+      keepDrawing(e.originalEvent.changedTouches[0]);
+      e.preventDefault();
+    });
 
   function startDrawing(e) {
-    originPoint = {x: e.pageX, y: e.pageY};
-    if (r) { r.remove(); r = undefined; }
+    originPoint = {
+      x: e.pageX,
+      y: e.pageY
+    };
+    if (r) {
+      r.remove();
+      r = undefined;
+    }
     drawing = true;
     r = svg.rect();
   }
+
   function keepDrawing(e) {
     if (drawing) {
-      var endPoint = {x: e.pageX, y: e.pageY};
+      var endPoint = {
+        x: e.pageX,
+        y: e.pageY
+      };
       createRect(originPoint, endPoint);
     }
   }
+
   function stopDrawing(e) {
     if (e) {
-      var endPoint = {x: e.pageX, y: e.pageY};
+      var endPoint = {
+        x: e.pageX,
+        y: e.pageY
+      };
       createRect(originPoint, endPoint);
     }
     drawing = false;
@@ -131,15 +142,32 @@ $(function () {
 
   function createRect(p1, p2) {
     var x, y, w, h;
-    if (p1.x < p2.x) { x = p1.x; w = p2.x - p1.x; }
-    else { x = p2.x; w = p1.x - p2.x; }
-    if (p1.y < p2.y) { y = p1.y; h = p2.y - p1.y; }
-    else { y = p2.y; h = p1.y - p2.y; }
-    _viewportRect = {x:x, y:y, w:w, h:h};
+    if (p1.x < p2.x) {
+      x = p1.x;
+      w = p2.x - p1.x;
+    } else {
+      x = p2.x;
+      w = p1.x - p2.x;
+    }
+    if (p1.y < p2.y) {
+      y = p1.y;
+      h = p2.y - p1.y;
+    } else {
+      y = p2.y;
+      h = p1.y - p2.y;
+    }
+    _viewportRect = {
+      x: x,
+      y: y,
+      w: w,
+      h: h
+    };
     _imageRect = translateRect(_viewportRect);
     r.attr({
-      x: x, y: y,
-      width: w, height: h,
+      x: x,
+      y: y,
+      width: w,
+      height: h,
       fillOpacity: 0,
       strokeWidth: 3,
       stroke: "#00ff00"
@@ -148,8 +176,7 @@ $(function () {
   }
 
   function writeDebugInfo() {
-    var content = 'VIEW [' + _viewportRect.x + ',' + _viewportRect.y + '] ' + _viewportRect.w + 'x' + _viewportRect.h
-      + '\nIMG  [' + _imageRect.x + ',' + _imageRect.y + '] ' + _imageRect.w + 'x' + _imageRect.h;
+    var content = 'VIEW [' + _viewportRect.x + ',' + _viewportRect.y + '] ' + _viewportRect.w + 'x' + _viewportRect.h + '\nIMG  [' + _imageRect.x + ',' + _imageRect.y + '] ' + _imageRect.w + 'x' + _imageRect.h;
     $('.debug-info').html('<pre>' + content + '</pre>');
   }
 
