@@ -39,18 +39,17 @@ module.exports = {
     fs.rename(imagePath, destPath, function (err) {
       if (err) { callback(err); }
       else {
-        var r = data.rect;
-        if (r && data.class === 'positive') {
-          var rectdesc = util.format('%s\t%d\t%d %d %d %d\n', data.id, 1, r.x, r.y, r.w, r.h);
+        if (data.rects && data.rects.length > 0 && data.class === 'positive') {
+          var rectdesc = describeRects(data);
           console.log('POSITIVE', rectdesc);
           fs.appendFile(rectsFile, rectdesc, function (err) {
             if (err) { fs.rename(destPath, imagePath); callback(err); }
-            else { callback(null); }
+            else { callback(); }
           });
         }
         else {
           console.log('NEGATIVE');
-          callback(null);
+          callback();
         }
       }
     });
@@ -103,6 +102,15 @@ function loadImage(filename, callback) {
       });
     }
   });
+}
+
+function describeRects(data) {
+  var rectdesc = util.format('%s\t%d', data.id, data.rects.length);
+  for (var i = 0; i < data.rects.length; i++) {
+    var r = data.rects[i];
+    rectdesc += util.format('\t%d %d %d %d', r.x, r.y, r.w, r.h);
+  }
+  return rectdesc + '\n';
 }
 
 

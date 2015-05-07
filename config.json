@@ -1,6 +1,6 @@
 {
   "debug": {
-    "imageDir": "E:\\webcam_upload"
+    "imageDir": "../webcam_upload"
   },
   "release": {
     "imageDir": "/home/webcam"

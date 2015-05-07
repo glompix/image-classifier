@@ -6,18 +6,35 @@ $(function() {
 
   // DOM objects
   var $loading = $('.loading');
+  var $submitPos = $('.submit-pos');
   var svg = Snap('#svg');
 
   // Drawing data
+  var _rects = [];
+  var _svgRects = [];
   var _imageData; // image displayed { id, data, width, height }
   var _imageRect, _viewportRect; // selectedRect { x, y, w, h }
 
-  $('.submit').on('click', function() {
+  $submitPos.on('click', function() {
+    if (_rects.length > 0) {
+      submit('positive');
+    }
+  });
+
+  $('.submit-neg').on('click', function() {
+    if (_rects.length > 0) {
+      popRect();
+    } else {
+      submit('negative');
+    }
+  });
+
+  function submit(classification) {
     $loading.show();
     var postData = {
-      'id': _imageData.id,
-      'class': $(this).attr('data-class'),
-      'rect': _imageRect
+      id: _imageData.id,
+      class: classification,
+      rects: _rects
     };
     $.post(url, postData, function(err) {
       if (!err || err === 'OK') {
@@ -27,14 +44,29 @@ $(function() {
         $loading.hide();
       }
     });
-  });
+  }
+
+  function popRect() {
+    _rects.pop();
+    r = _svgRects.pop();
+    r.remove();
+    console.log(_rects);
+  }
+  function pushRect(rect) {
+    _rects.push(rect);
+    console.log(_rects);
+  }
+
+  function enableButtons() {
+    // if (_rects.length === 0 ) { $submitPositive.attr... }
+  }
 
   $(window).on('hashchange', function() {
     var hash = this.location.hash;
     var filename = hash ? hash.substring(1) : '';
     if (filename) {
       if (filename === _imageData.id) {
-        paint();
+        refreshBackground();
       } else {
         $loading.show();
         loadImage(filename);
@@ -52,7 +84,7 @@ $(function() {
       } else {
         _imageData = data;
         if (window.location.hash === '#' + _imageData.id) {
-          paint();
+          refreshBackground();
         } else {
           window.location.hash = _imageData.id;
         }
@@ -60,7 +92,7 @@ $(function() {
     });
   }
 
-  function paint() {
+  function refreshBackground() {
     _imageRect = undefined;
     _viewportRect = undefined;
     svg.clear();
@@ -111,12 +143,9 @@ $(function() {
       x: e.pageX,
       y: e.pageY
     };
-    if (r) {
-      r.remove();
-      r = undefined;
-    }
     drawing = true;
     r = svg.rect();
+    _svgRects.push(r);
   }
 
   function keepDrawing(e) {
@@ -135,7 +164,8 @@ $(function() {
         x: e.pageX,
         y: e.pageY
       };
-      createRect(originPoint, endPoint);
+      var rect = createRect(originPoint, endPoint);
+      pushRect(rect);
     }
     drawing = false;
   }
@@ -173,6 +203,7 @@ $(function() {
       stroke: "#00ff00"
     });
     writeDebugInfo();
+    return _imageRect;
   }
 
   function writeDebugInfo() {
