@@ -7,7 +7,8 @@ $(function() {
   // DOM objects
   var $loading = $('.loading');
   var $submitPos = $('.submit-pos');
-  var svg = Snap('#svg');
+  var _svg = Snap('#svg');
+  var $svg = $('#svg');
 
   // Drawing data
   var _rects = [];
@@ -15,13 +16,14 @@ $(function() {
   var _imageData; // image displayed { id, data, width, height }
   var _imageRect, _viewportRect; // selectedRect { x, y, w, h }
 
-  $submitPos.on('click', function() {
+  $submitPos.on('click tap', function() {
+    console.log(_rects);
     if (_rects.length > 0) {
       submit('positive');
     }
   });
 
-  $('.submit-neg').on('click', function() {
+  $('.submit-neg').on('click tap', function() {
     if (_rects.length > 0) {
       popRect();
     } else {
@@ -50,15 +52,12 @@ $(function() {
     _rects.pop();
     r = _svgRects.pop();
     r.remove();
-    console.log(_rects);
+    console.log('POP', _rects, _svgRects);
   }
   function pushRect(rect) {
     _rects.push(rect);
-    console.log(_rects);
-  }
-
-  function enableButtons() {
-    // if (_rects.length === 0 ) { $submitPositive.attr... }
+    _svgRects.push(r);
+    console.log('PUSH', _rects, _svgRects);
   }
 
   $(window).on('hashchange', function() {
@@ -95,23 +94,9 @@ $(function() {
   function refreshBackground() {
     _imageRect = undefined;
     _viewportRect = undefined;
-    svg.clear();
-    svg.image(_imageData.data, 0, 0, '100%', '100%');
+    _svg.clear();
+    _svg.image(_imageData.data, 0, 0, '100%', '100%');
     $loading.hide();
-  }
-
-  function translateRect(r) {
-    var $svg = $('#svg');
-    var viewportWidth = $svg.width();
-    var viewportHeight = $svg.height();
-    var xScale = _imageData.width / viewportWidth;
-    var yScale = _imageData.height / viewportHeight;
-    return {
-      x: Math.round(r.x * xScale),
-      y: Math.round(r.y * yScale),
-      w: Math.round(r.w * xScale),
-      h: Math.round(r.h * yScale)
-    };
   }
 
   var originPoint;
@@ -144,60 +129,44 @@ $(function() {
       y: e.pageY
     };
     drawing = true;
-    r = svg.rect();
-    _svgRects.push(r);
+    r = _svg.rect();
   }
 
+  var rectInProgress;
   function keepDrawing(e) {
     if (drawing) {
       var endPoint = {
         x: e.pageX,
         y: e.pageY
       };
-      createRect(originPoint, endPoint);
+      rectInProgress = createRect(originPoint, endPoint);
     }
   }
 
   function stopDrawing(e) {
-    if (e) {
+    var rect = rectInProgress;
+    if (e && e.pageX && e.pageY) {
       var endPoint = {
         x: e.pageX,
         y: e.pageY
       };
-      var rect = createRect(originPoint, endPoint);
+      rect = createRect(originPoint, endPoint);
+    }
+    if (rect) {
       pushRect(rect);
     }
     drawing = false;
   }
 
   function createRect(p1, p2) {
-    var x, y, w, h;
-    if (p1.x < p2.x) {
-      x = p1.x;
-      w = p2.x - p1.x;
-    } else {
-      x = p2.x;
-      w = p1.x - p2.x;
-    }
-    if (p1.y < p2.y) {
-      y = p1.y;
-      h = p2.y - p1.y;
-    } else {
-      y = p2.y;
-      h = p1.y - p2.y;
-    }
-    _viewportRect = {
-      x: x,
-      y: y,
-      w: w,
-      h: h
-    };
-    _imageRect = translateRect(_viewportRect);
+    _viewportRect = Util.rectFromPoints(p1, p2);
+    _imageRect = Util.translateRect(_viewportRect, $svg, _imageData);
+    if (_imageRect.w < 20 && _imageRect.h < 20) { return; }
     r.attr({
-      x: x,
-      y: y,
-      width: w,
-      height: h,
+      x: _viewportRect.x,
+      y: _viewportRect.y,
+      width: _viewportRect.w,
+      height: _viewportRect.h,
       fillOpacity: 0,
       strokeWidth: 3,
       stroke: "#00ff00"
