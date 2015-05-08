@@ -94,6 +94,8 @@ $(function() {
   function refreshBackground() {
     _imageRect = undefined;
     _viewportRect = undefined;
+    _rects = [];
+    _svgRects = [];
     _svg.clear();
     _svg.image(_imageData.data, 0, 0, '100%', '100%');
     $loading.hide();
