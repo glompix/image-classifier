@@ -114,13 +114,22 @@ $(function() {
     })
     // touch events
     .on('touchstart', function(e) {
-      startDrawing(e.originalEvent.changedTouches[0]);
-      e.preventDefault();
+      var touches = e.originalEvent.changedTouches;
+      if (touches.length == 1) {
+        startDrawing(e.originalEvent.changedTouches[0]);
+        e.preventDefault();
+      }
     }).on('touchend', function(e) {
-      stopDrawing();
+      var touches = e.originalEvent.changedTouches;
+      if (touches.length == 1) {
+        stopDrawing();
+      }
     }).on('touchmove', function(e) {
-      keepDrawing(e.originalEvent.changedTouches[0]);
-      e.preventDefault();
+      var touches = e.originalEvent.changedTouches;
+      if (touches.length == 1) {
+        keepDrawing(e.originalEvent.changedTouches[0]);
+        e.preventDefault();
+      }
     });
 
   function startDrawing(e) {
