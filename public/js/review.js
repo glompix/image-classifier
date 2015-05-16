@@ -6,8 +6,7 @@ $(function () {
 
   // DOM objects
   var $loading = $('.loading');
-
-  var svgs = [];
+  var template = Handlebars.compile($('#tmplImagePanel').html());
 
   function loadNext(startAfterId) {
     $loading.show();
