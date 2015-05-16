@@ -6,18 +6,37 @@ $(function() {
 
   // DOM objects
   var $loading = $('.loading');
-  var svg = Snap('#svg');
+  var $submitPos = $('.submit-pos');
+  var _svg = Snap('#svg');
+  var $svg = $('#svg');
 
   // Drawing data
+  var _rects = [];
+  var _svgRects = [];
   var _imageData; // image displayed { id, data, width, height }
   var _imageRect, _viewportRect; // selectedRect { x, y, w, h }
 
-  $('.submit').on('click', function() {
+  $submitPos.on('click tap', function() {
+    console.log(_rects);
+    if (_rects.length > 0) {
+      submit('positive');
+    }
+  });
+
+  $('.submit-neg').on('click tap', function() {
+    if (_rects.length > 0) {
+      popRect();
+    } else {
+      submit('negative');
+    }
+  });
+
+  function submit(classification) {
     $loading.show();
     var postData = {
-      'id': _imageData.id,
-      'class': $(this).attr('data-class'),
-      'rect': _imageRect
+      id: _imageData.id,
+      class: classification,
+      rects: _rects
     };
     $.post(url, postData, function(err) {
       if (!err || err === 'OK') {
@@ -27,14 +46,26 @@ $(function() {
         $loading.hide();
       }
     });
-  });
+  }
+
+  function popRect() {
+    _rects.pop();
+    r = _svgRects.pop();
+    r.remove();
+    console.log('POP', _rects, _svgRects);
+  }
+  function pushRect(rect) {
+    _rects.push(rect);
+    _svgRects.push(r);
+    console.log('PUSH', _rects, _svgRects);
+  }
 
   $(window).on('hashchange', function() {
     var hash = this.location.hash;
     var filename = hash ? hash.substring(1) : '';
     if (filename) {
       if (filename === _imageData.id) {
-        paint();
+        refreshBackground();
       } else {
         $loading.show();
         loadImage(filename);
@@ -52,7 +83,7 @@ $(function() {
       } else {
         _imageData = data;
         if (window.location.hash === '#' + _imageData.id) {
-          paint();
+          refreshBackground();
         } else {
           window.location.hash = _imageData.id;
         }
@@ -60,26 +91,14 @@ $(function() {
     });
   }
 
-  function paint() {
+  function refreshBackground() {
     _imageRect = undefined;
     _viewportRect = undefined;
-    svg.clear();
-    svg.image(_imageData.data, 0, 0, '100%', '100%');
+    _rects = [];
+    _svgRects = [];
+    _svg.clear();
+    _svg.image(_imageData.data, 0, 0, '100%', '100%');
     $loading.hide();
-  }
-
-  function translateRect(r) {
-    var $svg = $('#svg');
-    var viewportWidth = $svg.width();
-    var viewportHeight = $svg.height();
-    var xScale = _imageData.width / viewportWidth;
-    var yScale = _imageData.height / viewportHeight;
-    return {
-      x: Math.round(r.x * xScale),
-      y: Math.round(r.y * yScale),
-      w: Math.round(r.w * xScale),
-      h: Math.round(r.h * yScale)
-    };
   }
 
   var originPoint;
@@ -97,13 +116,22 @@ $(function() {
     })
     // touch events
     .on('touchstart', function(e) {
-      startDrawing(e.originalEvent.changedTouches[0]);
-      e.preventDefault();
+      var touches = e.originalEvent.changedTouches;
+      if (touches.length == 1) {
+        startDrawing(e.originalEvent.changedTouches[0]);
+        e.preventDefault();
+      }
     }).on('touchend', function(e) {
-      stopDrawing();
+      var touches = e.originalEvent.changedTouches;
+      if (touches.length == 1) {
+        stopDrawing();
+      }
     }).on('touchmove', function(e) {
-      keepDrawing(e.originalEvent.changedTouches[0]);
-      e.preventDefault();
+      var touches = e.originalEvent.changedTouches;
+      if (touches.length == 1) {
+        keepDrawing(e.originalEvent.changedTouches[0]);
+        e.preventDefault();
+      }
     });
 
   function startDrawing(e) {
@@ -111,68 +139,51 @@ $(function() {
       x: e.pageX,
       y: e.pageY
     };
-    if (r) {
-      r.remove();
-      r = undefined;
-    }
     drawing = true;
-    r = svg.rect();
+    r = _svg.rect();
   }
 
+  var rectInProgress;
   function keepDrawing(e) {
     if (drawing) {
       var endPoint = {
         x: e.pageX,
         y: e.pageY
       };
-      createRect(originPoint, endPoint);
+      rectInProgress = createRect(originPoint, endPoint);
     }
   }
 
   function stopDrawing(e) {
-    if (e) {
+    var rect = rectInProgress;
+    if (e && e.pageX && e.pageY) {
       var endPoint = {
         x: e.pageX,
         y: e.pageY
       };
-      createRect(originPoint, endPoint);
+      rect = createRect(originPoint, endPoint);
+    }
+    if (rect) {
+      pushRect(rect);
     }
     drawing = false;
   }
 
   function createRect(p1, p2) {
-    var x, y, w, h;
-    if (p1.x < p2.x) {
-      x = p1.x;
-      w = p2.x - p1.x;
-    } else {
-      x = p2.x;
-      w = p1.x - p2.x;
-    }
-    if (p1.y < p2.y) {
-      y = p1.y;
-      h = p2.y - p1.y;
-    } else {
-      y = p2.y;
-      h = p1.y - p2.y;
-    }
-    _viewportRect = {
-      x: x,
-      y: y,
-      w: w,
-      h: h
-    };
-    _imageRect = translateRect(_viewportRect);
+    _viewportRect = Util.rectFromPoints(p1, p2);
+    _imageRect = Util.translateRect(_viewportRect, $svg, _imageData);
+    if (_imageRect.w < 20 && _imageRect.h < 20) { return; }
     r.attr({
-      x: x,
-      y: y,
-      width: w,
-      height: h,
+      x: _viewportRect.x,
+      y: _viewportRect.y,
+      width: _viewportRect.w,
+      height: _viewportRect.h,
       fillOpacity: 0,
       strokeWidth: 3,
       stroke: "#00ff00"
     });
     writeDebugInfo();
+    return _imageRect;
   }
 
   function writeDebugInfo() {
