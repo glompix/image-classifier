@@ -1,7 +1,7 @@
-var gulp = require('gulp'),
-  nodemon = require('gulp-nodemon'),
-  livereload = require('gulp-livereload');
-
+var gulp = require('gulp');
+var nodemon = require('gulp-nodemon');
+var livereload = require('gulp-livereload');
+var config = require('./config.json');
 
 gulp.task('develop', function () {
   livereload.listen();
@@ -15,6 +15,11 @@ gulp.task('develop', function () {
   });
 });
 
+gulp.task('migrate', function () {
+  require('./db/version').migrate();
+});
+
 gulp.task('default', [
-  'develop'
+  'migrate',
+  config.task
 ]);

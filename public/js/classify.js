@@ -35,6 +35,7 @@ $(function() {
     $loading.show();
     var postData = {
       id: _imageData.id,
+      set_id: 0, // TODO
       class: classification,
       rects: _rects
     };

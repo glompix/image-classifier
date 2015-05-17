@@ -1,86 +1,80 @@
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
-var config = require('../config.json')[process.env.NODE_ENV || 'debug'];
-
+var config = require('../config.json');
+var imagedb = require('../db/images');
 
 var queueRoot = config.imageDir;
-var rectsFile = path.join(queueRoot, 'positive', 'rects.txt');
 
-module.exports = {
-  loadfile: loadImage,
-  nextfile: function(callback) {
-    fs.readdir(queueRoot, function(err, files) {
-      if (err) {
-        callback(err); return;
-      }
-      var i = 0, filename;
-      while (files && i < files.length && !files[i].match(/\.jpg$/i)) { i++; }
-      if (i < files.length) {
-        filename = files[i];
-      }
-
-      if (filename) {
-        var data = loadImage(filename, function(data) {
-          callback(data);
-        });
-      }
-      else {
-        callback('me no find file');
-      }
-    });
-  },
-  classify: function(data, callback) {
-    var imagePath = path.join(queueRoot, data.id);
-    var destPath = path.join(queueRoot, data.class, data.id);
-    console.log(imagePath);
-
-    fs.rename(imagePath, destPath, function (err) {
-      if (err) { callback(err); }
-      else {
-        if (data.rects && data.rects.length > 0 && data.class === 'positive') {
-          var rectdesc = describeRects(data);
-          console.log('POSITIVE', rectdesc);
-          fs.appendFile(rectsFile, rectdesc, function (err) {
-            if (err) { fs.rename(destPath, imagePath); callback(err); }
-            else { callback(); }
-          });
-        }
-        else {
-          console.log('NEGATIVE');
-          callback();
-        }
-      }
-    });
-  },
-  declassify: function(id, callback) {
-    var joined = 0;
-    function join(err) {
-      // yeah, this is bad :P
-      if (err) { callback(err); }
-      else if(++joined == 2) { callback(); }
+module.exports.loadfile = loadImage;
+module.exports.nextfile = function(callback) {
+  fs.readdir(queueRoot, function(err, files) {
+    if (err) {
+      callback(err); return;
+    }
+    var i = 0, filename;
+    while (files && i < files.length && !files[i].match(/\.jpg$/i)) { i++; }
+    if (i < files.length) {
+      filename = files[i];
     }
 
-    var declassPath = path.join(queueRoot, id);
-    var posPath = path.join(queueRoot, 'positive', id);
-    fs.exists(posPath, function (exists) {
-      if (!exists) { join(); }
-      else {
-        console.log('DECLASSIFY', posPath);
-        fs.rename(posPath, declassPath, join);
-        // TODO: remove rectfile entry
-      }
-    });
+    if (filename) {
+      var data = loadImage(filename, function(data) {
+        callback(data);
+      });
+    } else {
+      callback('me no find file');
+    }
+  });
+};
+module.exports.classify = function(data, callback) {
+  var imagePath = path.join(queueRoot, data.id);
+  var destPath = path.join(queueRoot, data.class, data.id);
+  console.log(imagePath);
 
-    var negPath = path.join(queueRoot, 'negative', id);
-    fs.exists(negPath, function (exists) {
-      if (!exists) { join(); }
-      else {
-        console.log('DECLASSIFY', negPath);
-        fs.rename(negPath, declassPath, join);
+  fs.rename(imagePath, destPath, function (err) {
+    if (err) { callback(err); }
+    else {
+      if (data.rects && data.rects.length > 0 && data.class === 'positive') {
+        console.log('POSITIVE', describeRects(data));
+        imagedb.save(data, function (err) {
+          if (err) { fs.rename(destPath, imagePath); callback(err); }
+          else { callback(); }
+        });
+      } else {
+        console.log('NEGATIVE');
+        callback();
       }
-    });
+    }
+  });
+};
+module.exports.declassify = function(id, callback) {
+  var joined = 0;
+  function join(err) {
+    // yeah, this is bad :P
+    if (err) { callback(err); }
+    else if(++joined == 2) { callback(); }
   }
+
+  var declassPath = path.join(queueRoot, id);
+  var posPath = path.join(queueRoot, 'positive', id);
+  fs.exists(posPath, function (exists) {
+    if (!exists) { join(); }
+    else {
+      console.log('DECLASSIFY', posPath);
+      fs.rename(posPath, declassPath, join);
+      // TODO: remove rectfile entry
+    }
+  });
+
+  var negPath = path.join(queueRoot, 'negative', id);
+  fs.exists(negPath, function (exists) {
+    if (!exists) { join(); }
+    else {
+      console.log('DECLASSIFY', negPath);
+      fs.rename(negPath, declassPath, join);
+    }
+  });
 };
 
 function loadImage(filename, callback) {
@@ -90,8 +84,7 @@ function loadImage(filename, callback) {
       callback({
         'error': err
       });
-    }
-    else {
+    } else {
       var base64Image = 'data:image/jpg;base64,' + new Buffer(data, 'binary').toString('base64');
       callback({
         'id': filename,
@@ -111,35 +104,3 @@ function describeRects(data) {
   }
   return rectdesc + '\n';
 }
-
-
-var Transform = require('stream').Transform;
-// Transform sctreamer to remove first line
-function RemoveFirstLine(args) {
-    if (! (this instanceof RemoveFirstLine)) {
-        return new RemoveFirstLine(args);
-    }
-    Transform.call(this, args);
-    this._buff = '';
-    this._removed = false;
-}
-util.inherits(RemoveFirstLine, Transform);
-RemoveFirstLine.prototype._transform = function(chunk, encoding, done) {
-    if (this._removed) { // if already removed
-        this.push(chunk); // just push through buffer
-    } else {
-        // collect string into buffer
-        this._buff += chunk.toString();
-
-        // check if string has newline symbol
-        if (this._buff.indexOf('\n') !== -1) {
-            // push to stream skipping first line
-            this.push(this._buff.slice(this._buff.indexOf('\n') + 2));
-            // clear string buffer
-            this._buff = null;
-            // mark as removed
-            this._removed = true;
-        }
-    }
-    done();
-};
