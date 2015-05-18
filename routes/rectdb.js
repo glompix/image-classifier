@@ -37,7 +37,7 @@ module.exports.classify = function(data, callback) {
     else {
       if (data.rects && data.rects.length > 0 && data.class === 'positive') {
         console.log('POSITIVE', describeRects(data));
-        imagedb.save(data, function (err) {
+        imagedb.add(data, function (err) {
           if (err) { fs.rename(destPath, imagePath); callback(err); }
           else { callback(); }
         });

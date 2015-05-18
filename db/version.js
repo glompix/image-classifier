@@ -1,12 +1,15 @@
-var connection = require('./connection');
+var mysql = require('mysql');
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
+var config = require('../config.json');
 
 var _migrationsFolder = path.join(__dirname, 'migrations');
 
 module.exports.migrate = function() {
-  var c = connection.getUnsafe();
+  var c = mysql.createConnection(_.extend(config.database, {
+    multipleStatements: true
+  }));
   c.connect();
   ifNeedToMigrate(c, doMigrate);
 };
