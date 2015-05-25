@@ -16,10 +16,20 @@ gulp.task('develop', function () {
 });
 
 gulp.task('migrate', function () {
-  require('./db/version').migrate();
+  var version = require('./db/version');
+  console.log(version.error, version);
+  if (version.error) {
+    console.error(version.error);
+  } else {
+    version.migrate();
+  }
 });
 
 gulp.task('default', [
   'migrate',
+  config.task
+]);
+
+gulp.task('nomigrate', [
   config.task
 ]);

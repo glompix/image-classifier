@@ -15,7 +15,8 @@ module.exports.migrate = function() {
 };
 
 function ifNeedToMigrate(c, callback) {
-  bootstrap(c, function() {
+  bootstrap(c, function(err) {
+    if (err) throw err;
     c.query('select * from version limit 1', function(err, rows, fields) {
       if (err) throw err;
       var version;

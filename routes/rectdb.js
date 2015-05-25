@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var util = require('util');
 var config = require('../config.json');
-var imagedb = require('../db/images');
+var imagedb = require('../models/images');
 
 var queueRoot = config.imageDir;
 

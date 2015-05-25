@@ -1,4 +1,4 @@
-var mysqlPool = require('./mysqlPool');
+var mysqlPool = require('../db/mysqlPool');
 var config = require('../config.json');
 var _ = require('lodash');
 
