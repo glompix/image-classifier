@@ -6,42 +6,109 @@ body {
   margin: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+.app-body {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+}
 .content-container {
-  padding: 20;
+  padding: 20px;
+}
+.btn {
+  cursor: pointer;
+}
+.text-rainbow {
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0, #ee8888), color-stop(0.15, #dd88dd), color-stop(0.3, #8888ee), color-stop(0.45, #88dddd), color-stop(0.6, #88ee88), color-stop(0.75, #88ee88), color-stop(0.9, #dddd88), color-stop(1, #ee8888));
+  background-image: gradient(linear, left top, right top, color-stop(0, #ee8888), color-stop(0.15, #dd88dd), color-stop(0.3, #8888ee), color-stop(0.45, #88dddd), color-stop(0.6, #88ee88), color-stop(0.75, #88ee88), color-stop(0.9, #dddd88), color-stop(1, #ee8888));
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 .menu-toggle {
   display: none;
   width: 32px;
   height: 32px;
 }
-.menu {
+.header,
+.submenu {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  padding: 10px;
+  padding: 0;
   margin: 0;
   height: 20px;
+}
+.header {
+  height: 40px;
   background: #222;
   border-bottom: 1px solid #000;
-}
-.menu a {
-  color: #eee;
-  text-decoration: none;
+  color: #eeeeee;
   font-size: 18px;
-  font-weight: bold;
+}
+.header h1 {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 20px;
+  margin-right: 50px;
+  font-size: 18px;
+}
+.header a {
+  text-decoration: none;
+  color: #eeeeee;
+}
+.menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: right;
+  padding: 10px 20px;
+  margin: 0;
 }
 .menu li {
   float: left;
   list-style: none;
   margin-left: 20px;
 }
-.btn {
-  position: absolute;
+.menu li:only-child {
+  margin-left: 0;
+}
+.submenu {
+  text-align: center;
+}
+.submenu li {
+  list-style: none;
+  display: inline;
+  margin: 0 10px;
+  padding: 0;
+}
+.submenu .btn {
+  height: 40px;
+  padding: 10px 20px;
   margin: 0;
-  padding: 5px;
-  border: 1px solid #000;
-  cursor: pointer;
+  background: #444;
+  color: #f0f0f0;
+  border: 1px solid #111;
+}
+.app-body {
+  top: 40px;
+}
+.submenu .btn {
+  padding: 0 40px;
+}
+.submenu .submit-pos {
+  background: #252;
+}
+.submenu .submit-neg {
+  background: #522;
+}
+.canvas {
+  width: 100%;
+  height: 100%;
 }
 .loading {
   display: none;
@@ -60,62 +127,65 @@ body {
 .debug-info {
   display: none;
   position: absolute;
+  top: 10px;
+  left: 10px;
   padding: 8px;
   text-align: right;
   color: #eee;
   background: #222;
   border: 1px solid #555;
 }
-@media screen and (orientation: portrait) {
-  .canvas {
-    width: 100%;
-    height: 92%;
+@media screen and (max-width: 780px) and (orientation: portrait) {
+  .submenu {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 50px;
+  }
+  .submenu li {
+    margin: 0;
+  }
+  .app-body {
+    bottom: 50px;
   }
   .debug-info {
-    top: 0;
-    left: 0;
-    margin: 1% 0 0 1%;
+    top: 10px;
+    left: 10px;
   }
-  .btn-undo {
-    top: 0;
-    left: 0;
-    width: 8%;
-    height: 8%;
-  }
-  .btn-1 {
-    bottom: 0;
-    left: 0;
+  .submenu .btn {
     width: 50%;
-    height: 8%;
-  }
-  .btn-2 {
-    bottom: 0;
-    right: 0;
-    width: 50%;
-    height: 8%;
+    height: 50px;
+    padding: 0;
   }
 }
-@media screen and (orientation: landscape) {
-  .canvas {
-    width: 92%;
-    height: 100%;
+@media screen and (max-width: 780px) and (orientation: landscape) {
+  .submenu {
+    position: fixed;
+    padding-top: 40px;
+    top: 0;
+    right: 0;
+    bottom: 100px;
+    left: auto;
+    width: 50px;
+    height: 50%;
+  }
+  .submenu li {
+    margin: 0;
+    height: 50%;
+  }
+  .app-body {
+    right: 50px;
   }
   .debug-info {
-    top: 0;
-    right: 0;
-    margin: 1% 9% 0 0;
+    top: 10px;
+    left: 10px;
   }
-  .btn-1 {
-    right: 0;
-    top: 0;
-    width: 8%;
+  .submenu .btn {
+    width: 50px;
     height: 50%;
-  }
-  .btn-2 {
-    right: 0;
-    bottom: 0;
-    width: 8%;
-    height: 50%;
+    padding: 0;
   }
 }
 .image-stream img {

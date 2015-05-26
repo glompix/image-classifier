@@ -3,11 +3,13 @@ html, body {
   padding: 0; margin: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
-.content-container {
-  padding: 20;
+.app-body {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  padding: 0; margin: 0;
 }
 
-@import "menu.less";
+@import "util.less";
+@import "header.less";
 @import "classify.less";
 @import "review.less";

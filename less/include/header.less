@@ -1,0 +1,72 @@
+@header-text-color: #eee;
+@header-content-height: 20px;
+@header-padding-v: 10px;
+@header-padding: @header-padding-v 20px;
+@header-height: @header-content-height + 2*@header-padding-v;
+
+.menu-toggle {
+  display: none;
+  width: 32px;
+  height: 32px;
+}
+
+.header, .submenu {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 0; margin: 0;
+  height: @header-content-height;
+}
+.header {
+  height: @header-height;
+  background: #222;
+  border-bottom: 1px solid #000;
+  color: @header-text-color;
+  font-size: 18px;
+
+  h1 {
+    display: inline-block;
+    margin: 0; padding: @header-padding;
+    margin-right: 50px;
+    font-size: 18px;
+  }
+  a {
+    text-decoration: none;
+    color: @header-text-color;
+  }
+}
+
+.menu {
+  position: absolute;
+  top: 0; right: 0;
+  text-align: right;
+  padding: @header-padding; margin: 0;
+
+  li {
+    float: left;
+    list-style: none;
+    margin-left: 20px;
+    &:only-child { margin-left: 0; }
+  }
+}
+
+.submenu {
+  text-align: center;
+
+  li {
+    list-style: none;
+    display: inline;
+    margin: 0 10px; padding: 0;
+  }
+
+  .btn {
+    height: @header-height;
+    padding: @header-padding; margin: 0;
+    background: #444;
+    color: #f0f0f0;
+    border: 1px solid #111;
+  }
+}
+
+.app-body {
+  top: @header-height;
+}

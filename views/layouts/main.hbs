@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width; initial-scale=1.0; user-scalable=no;">
   <title>image classifier</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="/css/style.css">
   {{#if ENV_DEVELOPMENT}}
     <script src="http://localhost:35729/livereload.js"></script>
@@ -18,13 +19,22 @@
 
 <body>
   <button class="menu-toggle">-</button>
-  <ul class="menu">
-    <li><a href="/sets">Sets</a></li>
-    <li><a href="/sets">Log out</a></li>
-  </ul>
-
-  {{{body}}}
-
+  <div class="header">
+    <h1 class="text-rainbow">OpenCV Studio</h1>
+    <ul class="menu">
+      <li><a href="/classify">Classify</a></li>
+      <li><a href="/sets">Sets</a></li>
+      <li><a href="/sets">Log out</a></li>
+    </ul>
+    {{#if _menus.submenu}}
+      <ul class="submenu">
+        {{{_menus.submenu}}}
+      </ul>
+    {{/if}}
+  </div>
+  <div class="app-body">
+    {{{body}}}
+  </div>
 </body>
 
 </html>

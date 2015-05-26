@@ -2,7 +2,7 @@ $(function() {
   'use strict';
 
   // Config
-  var url = '/service';
+  var url = '/classify/service';
 
   // DOM objects
   var $loading = $('.loading');
@@ -43,7 +43,7 @@ $(function() {
       if (!err || err === 'OK') {
         loadImage();
       } else {
-        alert(err);
+        console.error('classify.submit', err);
         $loading.hide();
       }
     });
@@ -80,7 +80,7 @@ $(function() {
     if (filename) getUrl += '/' + filename;
     $.get(getUrl, function(data) {
       if (data.error) {
-        alert(data.error);
+        console.error('classify.loadImage', data.error);
       } else {
         _imageData = data;
         if (window.location.hash === '#' + _imageData.id) {

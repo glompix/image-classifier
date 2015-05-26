@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var plumber = require('gulp-plumber');
 var nodemon = require('gulp-nodemon');
 var livereload = require('gulp-livereload');
 var less = require('gulp-less');
@@ -7,7 +8,8 @@ var path = require('path');
 var config = require('./config.json');
 
 gulp.task('less', function () {
-  return gulp.src('./less/*.less')
+  gulp.src('./less/*.less')
+    .pipe(plumber())
     .pipe(less({
       paths: [ path.join(__dirname, 'less', 'include') ]
     }))

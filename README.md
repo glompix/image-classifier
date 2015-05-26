@@ -3,7 +3,7 @@
 Helps classify images using NodeJS and SVG for training a Haar classifier.
 
 ## to do
-* select multiple objects
+* <strike>select multiple objects</strike>
 * review mode
 * ci/cd
 * fine adjustment controls
@@ -12,4 +12,7 @@ Helps classify images using NodeJS and SVG for training a Haar classifier.
   * classification set
   * user/account
   * admin tools
-* upload images (zip)
+* Filesystem abstraction
+  * Dropbox integration
+  * Google Drive integration
+* XML generation
