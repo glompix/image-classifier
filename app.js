@@ -32,7 +32,11 @@ app.engine('hbs', exphbs({
       html = html.replace(/>\s*</g, '><');
       this._menus[name] += html;
       return null;
-    }
+    },
+		appClass: function(name, options) {
+			this._appClass = name;
+			return null;
+		}
 	}
 }));
 app.set('views', path.join(__dirname, 'views'));
@@ -57,6 +61,7 @@ app.use(bodyParser.urlencoded({
 app.use('/', require('./routes/index'));
 app.use('/classify', require('./routes/classify'));
 app.use('/users', require('./routes/user'));
+app.use('/sets', require('./routes/set'));
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

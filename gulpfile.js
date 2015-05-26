@@ -6,12 +6,18 @@ var less = require('gulp-less');
 
 var path = require('path');
 var config = require('./config.json');
+var LessPluginCleanCSS = require('less-plugin-clean-css');
+var cleancss = new LessPluginCleanCSS({ advanced: true });
 
 gulp.task('less', function () {
   gulp.src('./less/*.less')
     .pipe(plumber())
     .pipe(less({
-      paths: [ path.join(__dirname, 'less', 'include') ]
+      plugins: [cleancss],
+      paths: [
+        path.join(__dirname, 'less', 'include'),
+        path.join(__dirname, 'less', 'bootstrap')
+      ]
     }))
     .pipe(gulp.dest('./public/css'));
 });

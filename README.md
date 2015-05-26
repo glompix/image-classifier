@@ -4,6 +4,7 @@ Helps classify images using NodeJS and SVG for training a Haar classifier.
 
 ## to do
 * <strike>select multiple objects</strike>
+* hotkeys
 * review mode
 * ci/cd
 * fine adjustment controls
