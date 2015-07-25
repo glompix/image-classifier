@@ -7,6 +7,7 @@ $(function() {
   // DOM objects
   var $loading = $('.loading');
   var $submitPos = $('.submit-pos');
+  /* jshint -W064 */
   var _svg = Snap('#svg');
   var $svg = $('#svg');
 
