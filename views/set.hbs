@@ -1,17 +1,22 @@
 {{appClass 'app-set'}}
 {{#menu 'submenu'}}
 <li>
-	<a href="#/new" class="btn">New set</a>
+	<a href="#/new" class="menu-btn">New set</a>
 </li>
 {{/menu}}
 
 <div id="new">
 	<form action="/service/add">
 		<fieldset>
-			<label for="NameTextBox">Name</label>
-			<input type="text" name="name" id="NameTextBox" placeholder="Frontal cat faces..." />
-			<label for="PathTextBox">Path</label>
-			<input type="text" name="path" id="PathTextBox" placeholder="/path/to/files..." />
+			<div class="form-group">
+				<label for="NameTextBox">Name</label>
+				<input type="text" name="name" class="form-control" id="NameTextBox" placeholder="Frontal cat faces..." />
+			</div>
+			<div class="form-group">
+				<label for="PathTextBox">Path</label>
+				<input type="text" name="path" class="form-control" id="PathTextBox" placeholder="/path/to/files..." />
+			</div>
 		</fieldset>
+  	<button type="submit" class="btn btn-default">Submit</button>
 	</form>
 </div>
