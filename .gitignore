@@ -1,4 +1,5 @@
 /config.json
+/.jshintrc
 
 public/components
 .sass-cache
